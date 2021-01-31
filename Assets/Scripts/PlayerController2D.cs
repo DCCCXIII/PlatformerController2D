@@ -79,6 +79,7 @@ public class PlayerController2D : MonoBehaviour
     }
 
     // TODO maybe make animation depend on velocity and not input?
+    // TODO Flies off on ledges
     private void Move()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
