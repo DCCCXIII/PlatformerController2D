@@ -13,12 +13,11 @@ public class PlayerController2D : MonoBehaviour
     private float _jumpStrength = 500;
     [Header("Ground")]
     [SerializeField]
-    private bool _grounded;
+    private bool _grounded = true;
     [SerializeField]
     private float _groundOffset = 0;
     [SerializeField]
     private LayerMask _whatIsGround;
-
 
     private Animator _animator;
     private Rigidbody2D _rigidbody;
@@ -26,7 +25,6 @@ public class PlayerController2D : MonoBehaviour
 
     private void Awake()
     {
-        
         _rigidbody = gameObject.GetComponent<Rigidbody2D>();
         _animator = gameObject.GetComponent<Animator>();
         _spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
@@ -41,13 +39,8 @@ public class PlayerController2D : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // TODO if !grounded zero friction so it doesn's get stuck on walls
         _animator.SetBool("Grounded", _grounded = CheckGround());
         Move();
-    }
-
-    private void LateUpdate()
-    {
     }
 
     /// <summary>
