@@ -17,7 +17,9 @@ public class PlayerController2D : MonoBehaviour
     [SerializeField]
     private float _groundOffset = 0;
     [SerializeField]
-    private LayerMask _whatIsGround;
+    private LayerMask _whatIsGround = default;
+    [SerializeField]
+    private bool _airControl = false;
 
     private Animator _animator;
     private Rigidbody2D _rigidbody;
@@ -28,12 +30,6 @@ public class PlayerController2D : MonoBehaviour
         _rigidbody = gameObject.GetComponent<Rigidbody2D>();
         _animator = gameObject.GetComponent<Animator>();
         _spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        Debug.Log(_spriteRenderer.sprite.rect.height);
     }
 
     // Update is called once per frame
@@ -80,9 +76,11 @@ public class PlayerController2D : MonoBehaviour
             hitRight.collider != null;
     }
 
+    // TODO maybe make animation depend on velocity and not input?
     private void Move()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
+        Debug.Log(horizontalInput);
         if (horizontalInput < 0.1f)
         {
             gameObject.transform.localScale = new Vector3(-1, 1);
@@ -93,7 +91,8 @@ public class PlayerController2D : MonoBehaviour
         }
 
 
-        if (horizontalInput > 0.1f || horizontalInput < -0.1f)
+        if ((horizontalInput > 0.1f || horizontalInput < -0.1f) &&
+            (_airControl || _grounded))
         {
             _rigidbody.velocity = new Vector2(_speed * Time.deltaTime * horizontalInput, _rigidbody.velocity.y);
             _animator.SetBool("Walking", true);
