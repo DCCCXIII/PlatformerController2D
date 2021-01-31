@@ -11,6 +11,10 @@ public class PlayerController2D : MonoBehaviour
     private float _speed = 500;
     [SerializeField]
     private float _jumpStrength = 500;
+    [SerializeField]
+    private float _airControlModifier = 0.5f;
+    [SerializeField]
+    private bool _airControl = false;
     [Header("Ground")]
     [SerializeField]
     private bool _grounded = true;
@@ -18,8 +22,6 @@ public class PlayerController2D : MonoBehaviour
     private float _groundOffset = 0;
     [SerializeField]
     private LayerMask _whatIsGround = default;
-    [SerializeField]
-    private bool _airControl = false;
 
     private Animator _animator;
     private Rigidbody2D _rigidbody;
@@ -80,7 +82,8 @@ public class PlayerController2D : MonoBehaviour
     private void Move()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
-        Debug.Log(horizontalInput);
+        float m = _grounded ? _speed : _speed * _airControlModifier;
+
         if (horizontalInput < 0.1f)
         {
             gameObject.transform.localScale = new Vector3(-1, 1);
@@ -90,11 +93,10 @@ public class PlayerController2D : MonoBehaviour
             gameObject.transform.localScale = new Vector3(1, 1);
         }
 
-
         if ((horizontalInput > 0.1f || horizontalInput < -0.1f) &&
             (_airControl || _grounded))
         {
-            _rigidbody.velocity = new Vector2(_speed * Time.deltaTime * horizontalInput, _rigidbody.velocity.y);
+            _rigidbody.velocity = new Vector2(m * Time.deltaTime * horizontalInput, _rigidbody.velocity.y);
             _animator.SetBool("Walking", true);
         }
         else
