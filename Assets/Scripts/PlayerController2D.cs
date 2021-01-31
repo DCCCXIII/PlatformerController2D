@@ -78,8 +78,9 @@ public class PlayerController2D : MonoBehaviour
             hitRight.collider != null;
     }
 
-    // TODO maybe make animation depend on velocity and not input?
-    // TODO Flies off on ledges
+    // TODO maybe make animation depend on velocity and not input? (only works if controlling movement with rigidbody)
+    // TODO using transform instead of rigidbody to control movement seems to give better results (ledges still weird)
+    //      requires having air control on... though
     private void Move()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
@@ -97,7 +98,8 @@ public class PlayerController2D : MonoBehaviour
         if ((horizontalInput > 0.1f || horizontalInput < -0.1f) &&
             (_airControl || _grounded))
         {
-            _rigidbody.velocity = new Vector2(m * Time.deltaTime * horizontalInput, _rigidbody.velocity.y);
+            //_rigidbody.velocity = new Vector2(m * Time.deltaTime * horizontalInput, _rigidbody.velocity.y);
+            transform.position =  new Vector3(transform.position.x + m * Time.deltaTime * horizontalInput, transform.position.y);
             _animator.SetBool("Walking", true);
         }
         else
