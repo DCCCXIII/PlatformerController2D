@@ -81,6 +81,7 @@ public class PlayerController2D : MonoBehaviour
     // TODO maybe make animation depend on velocity and not input? (only works if controlling movement with rigidbody)
     // TODO using transform instead of rigidbody to control movement seems to give better results (ledges still weird)
     //      requires having air control on... though
+    //      if against a wall, it will "bunce" against it.
     private void Move()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
