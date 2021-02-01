@@ -6,7 +6,6 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class PlayerController2D : MonoBehaviour
 {
-    [SerializeField] private float _raycastExtension = 0.1f;
     [Header("Movement")]
     [SerializeField] private float _speed = 500;
     [SerializeField] private float _jumpStrength = 500;
@@ -15,12 +14,18 @@ public class PlayerController2D : MonoBehaviour
 
     [Header("Ground")]
     [SerializeField] private bool _grounded = true;
-    [SerializeField] private float _groundOffset = 0;
     [SerializeField] private LayerMask _whatIsGround = default;
 
     [Header("Sides")]
     [SerializeField] private bool _leftContact;
     [SerializeField] private bool _rightContact;
+    [SerializeField] private bool _upContact;
+
+    [Header("Raycasting")]
+    [SerializeField] private Vector2 _horizontalOffset;
+    [SerializeField] private float _horizontalExtension;
+    [SerializeField] private Vector2 _verticalOffset;
+    [SerializeField] private float _verticalExtension;
 
     private Animator _animator;
     private Rigidbody2D _rigidbody;
@@ -39,6 +44,7 @@ public class PlayerController2D : MonoBehaviour
         _animator.SetBool("Grounded", _grounded = CheckGround());
         _leftContact = CheckLeft();
         _rightContact = CheckRight();
+        _upContact = CheckUp();
         Move();
     }
 
@@ -92,32 +98,67 @@ public class PlayerController2D : MonoBehaviour
     private bool CheckGround()
     {
         RaycastHit2D hitCenter = Physics2D.Raycast(
-            new Vector2(transform.position.x, transform.position.y), 
+            new Vector2(transform.position.x, transform.position.y + _verticalOffset.y), 
             Vector2.down,
-            _spriteRenderer.bounds.size.y / 2 + _raycastExtension,
+            _spriteRenderer.bounds.size.y / 2 + _verticalExtension,
             _whatIsGround);
         bool c = hitCenter.collider != null;
-        Debug.DrawRay(new Vector3(transform.position.x, transform.position.y), 
-            new Vector3(0, -(_spriteRenderer.bounds.size.y / 2 + _raycastExtension)),
+        Debug.DrawRay(new Vector3(transform.position.x, transform.position.y + _verticalOffset.y), 
+            new Vector3(0, -(_spriteRenderer.bounds.size.y / 2 + _verticalExtension)),
             c ? Color.red : Color.green);
 
         RaycastHit2D hitLeft = Physics2D.Raycast(
-            new Vector2(transform.position.x - (_spriteRenderer.bounds.size.x / 2) + _groundOffset, transform.position.y), 
+            new Vector2(transform.position.x - (_spriteRenderer.bounds.size.x / 2) + _verticalOffset.x, transform.position.y + _verticalOffset.y), 
             Vector2.down,
-             _spriteRenderer.bounds.size.y / 2 + _raycastExtension,
+             _spriteRenderer.bounds.size.y / 2 + _verticalExtension,
             _whatIsGround);
         bool l = hitLeft.collider != null;
-        Debug.DrawRay(new Vector3(transform.position.x - (_spriteRenderer.bounds.size.x / 2) + _groundOffset, transform.position.y), 
-            new Vector3(0, -(_spriteRenderer.bounds.size.y / 2 + _raycastExtension)),
+        Debug.DrawRay(new Vector3(transform.position.x - (_spriteRenderer.bounds.size.x / 2) + _verticalOffset.x, transform.position.y +_verticalOffset.y), 
+            new Vector3(0, -(_spriteRenderer.bounds.size.y / 2 + _verticalExtension)),
             l ? Color.red : Color.green);
 
-        RaycastHit2D hitRight = Physics2D.Raycast(new Vector2(transform.position.x + (_spriteRenderer.bounds.size.x / 2) - _groundOffset, transform.position.y), 
+        RaycastHit2D hitRight = Physics2D.Raycast(
+            new Vector2(transform.position.x + (_spriteRenderer.bounds.size.x / 2) - _verticalOffset.x, transform.position.y +_verticalOffset.y), 
             Vector2.down,
-             _spriteRenderer.bounds.size.y / 2 + _raycastExtension,
+             _spriteRenderer.bounds.size.y / 2 + _verticalExtension,
             _whatIsGround);
         bool r = hitRight.collider != null;
-        Debug.DrawRay(new Vector3(transform.position.x + (_spriteRenderer.bounds.size.x / 2) - _groundOffset, transform.position.y), 
-            new Vector3(0, -(_spriteRenderer.bounds.size.y / 2 + _raycastExtension)),
+        Debug.DrawRay(new Vector3(transform.position.x + (_spriteRenderer.bounds.size.x / 2) - _verticalOffset.x, transform.position.y + _verticalOffset.y), 
+            new Vector3(0, -(_spriteRenderer.bounds.size.y / 2 + _verticalExtension)),
+            r ? Color.red : Color.green);
+
+        return c || l || r;
+    }
+
+    private bool CheckUp()
+    {
+        RaycastHit2D hitCenter = Physics2D.Raycast(
+            new Vector2(transform.position.x, transform.position.y + _verticalOffset.y),
+            Vector2.up,
+            _spriteRenderer.bounds.size.y / 2 + _verticalExtension,
+            _whatIsGround);
+        bool c = hitCenter.collider != null;
+        Debug.DrawRay(new Vector3(transform.position.x, transform.position.y + +_verticalOffset.y),
+            new Vector3(0, _spriteRenderer.bounds.size.y / 2 + _verticalExtension),
+            c ? Color.red : Color.green);
+
+        RaycastHit2D hitLeft = Physics2D.Raycast(
+            new Vector2(transform.position.x - (_spriteRenderer.bounds.size.x / 2) + _verticalOffset.x, transform.position.y + _verticalOffset.y),
+            Vector2.up,
+             _spriteRenderer.bounds.size.y / 2 + _verticalExtension,
+            _whatIsGround);
+        bool l = hitLeft.collider != null;
+        Debug.DrawRay(new Vector3(transform.position.x - (_spriteRenderer.bounds.size.x / 2) + _verticalOffset.x, transform.position.y + _verticalOffset.y),
+            new Vector3(0, _spriteRenderer.bounds.size.y / 2 + _verticalExtension),
+            l ? Color.red : Color.green);
+
+        RaycastHit2D hitRight = Physics2D.Raycast(new Vector2(transform.position.x + (_spriteRenderer.bounds.size.x / 2) - _verticalOffset.x, transform.position.y + _verticalOffset.y),
+            Vector2.up,
+             _spriteRenderer.bounds.size.y / 2 + _verticalExtension,
+            _whatIsGround);
+        bool r = hitRight.collider != null;
+        Debug.DrawRay(new Vector3(transform.position.x + (_spriteRenderer.bounds.size.x / 2) - _verticalOffset.x, transform.position.y + _verticalOffset.y),
+            new Vector3(0, _spriteRenderer.bounds.size.y / 2 + _verticalExtension),
             r ? Color.red : Color.green);
 
         return c || l || r;
@@ -132,31 +173,31 @@ public class PlayerController2D : MonoBehaviour
         RaycastHit2D hitUpper = Physics2D.Raycast(
             new Vector2(transform.position.x, transform.position.y + _spriteRenderer.bounds.size.y/2),
             Vector2.left,
-            _spriteRenderer.bounds.size.x / 2 + _raycastExtension,
+            _spriteRenderer.bounds.size.x / 2 + _horizontalExtension,
             _whatIsGround);
         bool u = hitUpper.collider != null;
         Debug.DrawRay(new Vector3(transform.position.x, transform.position.y + _spriteRenderer.bounds.size.y / 2),
-            new Vector3(-(_spriteRenderer.bounds.size.x / 2 + _raycastExtension), 0),
+            new Vector3(-(_spriteRenderer.bounds.size.x / 2 + _horizontalExtension), 0),
             u ? Color.red : Color.green);
 
         RaycastHit2D hitMiddle = Physics2D.Raycast(
             new Vector2(transform.position.x, transform.position.y),
             Vector2.left,
-            _spriteRenderer.bounds.size.x / 2 + _raycastExtension,
+            _spriteRenderer.bounds.size.x / 2 + _horizontalExtension,
             _whatIsGround);
         bool m = hitMiddle.collider != null;
         Debug.DrawRay(new Vector3(transform.position.x, transform.position.y),
-            new Vector3(-(_spriteRenderer.bounds.size.x / 2 + _raycastExtension), 0),
+            new Vector3(-(_spriteRenderer.bounds.size.x / 2 + _horizontalExtension), 0),
             m ? Color.red : Color.green);
 
         RaycastHit2D hitLower = Physics2D.Raycast(
             new Vector2(transform.position.x, transform.position.y - _spriteRenderer.bounds.size.y / 2),
             Vector2.left,
-            _spriteRenderer.bounds.size.x / 2 + _raycastExtension,
+            _spriteRenderer.bounds.size.x / 2 + _horizontalExtension,
             _whatIsGround);
         bool l = hitLower.collider != null;
         Debug.DrawRay(new Vector3(transform.position.x, transform.position.y - _spriteRenderer.bounds.size.y / 2),
-            new Vector3(-(_spriteRenderer.bounds.size.x / 2 + _raycastExtension), 0),
+            new Vector3(-(_spriteRenderer.bounds.size.x / 2 + _horizontalExtension), 0),
             l ? Color.red : Color.green);
 
         return u || m || l;
@@ -164,7 +205,37 @@ public class PlayerController2D : MonoBehaviour
 
     private bool CheckRight()
     {
-        return false;
+        RaycastHit2D hitUpper = Physics2D.Raycast(
+            new Vector2(transform.position.x, transform.position.y + _spriteRenderer.bounds.size.y / 2),
+            Vector2.right,
+            _spriteRenderer.bounds.size.x / 2 + _horizontalExtension,
+            _whatIsGround);
+        bool u = hitUpper.collider != null;
+        Debug.DrawRay(new Vector3(transform.position.x, transform.position.y + _spriteRenderer.bounds.size.y / 2),
+            new Vector3(_spriteRenderer.bounds.size.x / 2 + _horizontalExtension, 0),
+            u ? Color.red : Color.green);
+
+        RaycastHit2D hitMiddle = Physics2D.Raycast(
+            new Vector2(transform.position.x, transform.position.y),
+            Vector2.right,
+            _spriteRenderer.bounds.size.x / 2 + _horizontalExtension,
+            _whatIsGround);
+        bool m = hitMiddle.collider != null;
+        Debug.DrawRay(new Vector3(transform.position.x, transform.position.y),
+            new Vector3(_spriteRenderer.bounds.size.x / 2 + _horizontalExtension, 0),
+            m ? Color.red : Color.green);
+
+        RaycastHit2D hitLower = Physics2D.Raycast(
+            new Vector2(transform.position.x, transform.position.y - _spriteRenderer.bounds.size.y / 2),
+            Vector2.right,
+            _spriteRenderer.bounds.size.x / 2 + _horizontalExtension,
+            _whatIsGround);
+        bool l = hitLower.collider != null;
+        Debug.DrawRay(new Vector3(transform.position.x, transform.position.y - _spriteRenderer.bounds.size.y / 2),
+            new Vector3(_spriteRenderer.bounds.size.x / 2 + _horizontalExtension, 0),
+            l ? Color.red : Color.green);
+
+        return u || m || l;
     }
 
     #endregion
