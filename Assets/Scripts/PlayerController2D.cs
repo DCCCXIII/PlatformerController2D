@@ -60,6 +60,7 @@ public class PlayerController2D : MonoBehaviour
         {
             gameObject.transform.localScale = new Vector3(-1, 1);
             transform.position = new Vector3(transform.position.x + m * Time.deltaTime * horizontalInput, transform.position.y);
+            _animator.SetBool("Walking", true);
         }
         // Move right
         else if (horizontalInput > 0.1f &&
@@ -68,6 +69,7 @@ public class PlayerController2D : MonoBehaviour
         {
             gameObject.transform.localScale = new Vector3(1, 1);
             transform.position = new Vector3(transform.position.x + m * Time.deltaTime * horizontalInput, transform.position.y);
+            _animator.SetBool("Walking", true);
         }
         else
         {
