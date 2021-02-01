@@ -22,6 +22,7 @@ public class PlayerController2D : MonoBehaviour
     [SerializeField] private bool _upContact;
 
     [Header("Raycasting")]
+    // TODO maybe Vector2 is not the clearest for offset, specially on horizontal
     [SerializeField] private Vector2 _horizontalOffset = default;
     [SerializeField] private float _horizontalExtension = default;
     [SerializeField] private Vector2 _verticalOffset = default;
@@ -48,11 +49,10 @@ public class PlayerController2D : MonoBehaviour
         Move();
     }
 
-    // TODO maybe make animation depend on velocity and not input? (only works if controlling movement with rigidbody)
-    //      probably not needed if working directly with transform, though
-    // TODO using transform instead of rigidbody to control movement seems to give better results (ledges still weird)
-    //      requires having air control on... though
-    //      if against a wall, it will "bunce" against it.
+
+    /// <summary>
+    /// Moves character
+    /// </summary>
     private void Move()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
@@ -68,6 +68,7 @@ public class PlayerController2D : MonoBehaviour
             transform.position = new Vector3(transform.position.x + m * Time.deltaTime * horizontalInput, transform.position.y);
             _animator.SetBool("Walking", true);
         }
+
         // Move right
         else if (horizontalInput > 0.1f &&
             canMoveLateral &&
@@ -83,12 +84,14 @@ public class PlayerController2D : MonoBehaviour
         }
 
         // Jump
+        // TODO Add double jump
         if (Input.GetButtonDown("Jump") && _grounded)
         {
             _rigidbody.AddForce(new Vector2(0, _jumpStrength));
             _animator.SetTrigger("Jumping");
         }
     }
+
 
     #region Raycasting
     /// <summary>
@@ -164,7 +167,6 @@ public class PlayerController2D : MonoBehaviour
         return c || l || r;
     }
 
-
     // TODO check left, right to know if there can be input to sides 
     //      seems to generate issues with ledges...
     private bool CheckLeft()
@@ -237,6 +239,5 @@ public class PlayerController2D : MonoBehaviour
 
         return u || m || l;
     }
-
     #endregion
 }
