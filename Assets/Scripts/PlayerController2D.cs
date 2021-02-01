@@ -23,9 +23,9 @@ public class PlayerController2D : MonoBehaviour
 
     [Header("Raycasting")]
     [SerializeField] private Vector2 _horizontalOffset = default;
-    [SerializeField] private float _horizontalExtension;
+    [SerializeField] private float _horizontalExtension = default;
     [SerializeField] private Vector2 _verticalOffset = default;
-    [SerializeField] private float _verticalExtension;
+    [SerializeField] private float _verticalExtension = default;
 
     private Animator _animator;
     private Rigidbody2D _rigidbody;
