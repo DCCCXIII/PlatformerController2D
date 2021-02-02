@@ -362,21 +362,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12b138985fe95cf468cdbd92de7616ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 10
-  _jumpStrength: 400
-  _airControlModifier: 0.6
-  _airControl: 1
-  _grounded: 1
-  _whatIsGround:
-    serializedVersion: 2
-    m_Bits: 512
-  _leftContact: 0
-  _rightContact: 0
-  _upContact: 0
-  _horizontalOffset: {x: -0.41, y: 0.43}
-  _horizontalExtension: -0.1
-  _verticalOffset: {x: 0.3, y: -0.42}
-  _verticalExtension: -0.4
 --- !u!212 &849264706
 SpriteRenderer:
   m_ObjectHideFlags: 0
